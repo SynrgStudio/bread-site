@@ -1,0 +1,509 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --tone: #d7a75a; /* el color de Breadslicer: el formato nació ahí */
+}
+
+/* Tipografías de respaldo, mientras llega Archivo. Cada una va agrandada para
+   ocupar apenas más que Archivo (un 1 %): así, cuando Archivo la reemplaza, el
+   texto nunca crece. Si creciera, el navegador lo tomaría como un elemento
+   nuevo pintado tarde, y el LCP se iría a ese momento. Los valores salen de
+   medir el ancho del texto del sitio en cada fuente (Arial y Liberation Sans
+   miden lo mismo; DejaVu es la de muchos Linux, como el de PageSpeed). Las
+   "Wide" son para los títulos, que usan Archivo ensanchada. */
+@font-face {
+  font-family: "Fallback Arial";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 99.6%;
+}
+@font-face {
+  font-family: "Fallback Roboto";
+  src: local("Roboto"), local("Roboto-Regular");
+  size-adjust: 100.3%;
+}
+@font-face {
+  font-family: "Fallback DejaVu";
+  src: local("DejaVu Sans"), local("DejaVuSans");
+  size-adjust: 87.8%;
+}
+@font-face {
+  font-family: "Fallback Wide Arial";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("LiberationSans-Bold"), local("Arimo Bold"), local("Helvetica Neue Bold"), local("Helvetica Bold");
+  font-weight: 700;
+  size-adjust: 128.7%;
+}
+@font-face {
+  font-family: "Fallback Wide Roboto";
+  src: local("Roboto Bold"), local("Roboto-Bold");
+  font-weight: 700;
+  size-adjust: 136%;
+}
+@font-face {
+  font-family: "Fallback Wide DejaVu";
+  src: local("DejaVu Sans Bold"), local("DejaVuSans-Bold");
+  font-weight: 700;
+  size-adjust: 107%;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  position: relative; /* la hoja de puntos ocupa todo su alto */
+  background: #111214;
+  color: #c9cacb;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #f0f0ed;
+  color: #111214;
+}
+
+:focus-visible {
+  outline: 2px solid var(--tone);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@layer components {
+  /* Títulos: Archivo ensanchada. El ancho es parte de la marca. */
+  .display {
+    font-family: var(--font-sans), "Fallback Wide Arial", "Fallback Wide Roboto", "Fallback Wide DejaVu", sans-serif;
+    font-stretch: 125%;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    color: #f0f0ed;
+    text-wrap: balance;
+  }
+
+  /* Etiquetas y cifras secundarias */
+  .label {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #83878b;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  /* Enlace con flecha: el único estilo de enlace de acción */
+  .go {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    color: #f0f0ed;
+    border-bottom: 1px solid #3d4044;
+    padding-bottom: 2px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .go:hover {
+    color: var(--tone);
+    border-color: var(--tone);
+  }
+  .go.in::after {
+    content: "→"; /* enlace dentro del sitio */
+  }
+  .go:not(.in)::after {
+    content: "↗";
+    font-family: var(--font-mono), monospace;
+    font-size: 0.85em;
+  }
+}
+
+/* Barra superior: el único vidrio de la página, donde sí hay algo detrás */
+.topbar {
+  background: rgba(17, 18, 20, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+/* ------------------------------------------------------------ Plano técnico */
+
+/* Encabezado: cuadrícula de 100 px, alineada con la regla del pie */
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(240, 240, 237, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(240, 240, 237, 0.035) 1px, transparent 1px);
+  background-size: 100px 100px;
+  /* 3 px: el encabezado empieza a 57 px del tope (la barra), y así sus
+     líneas caen sobre las filas de puntos de la hoja, que van cada 20 */
+  background-position: 0 3px;
+}
+
+/* Hoja técnica: puntos cada 20 px en toda la página, muy tenues. La segunda
+   capa los aclara apenas alrededor del cursor (ver Sheet en technical.tsx).
+   El punto es una imagen de 20 px que se repite: al navegador le cuesta
+   menos que calcular un degradado por cada punto. */
+.sheet {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='1' cy='1' r='.9' fill='%23f0f0ed' fill-opacity='.07'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+  background-position: -0.5px -0.5px;
+}
+.sheet-glow {
+  position: fixed;
+  visibility: hidden; /* no se dibuja hasta que aparece un cursor */
+  opacity: 0;
+  transition: opacity 0.4s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='1' cy='1' r='.9' fill='%23f0f0ed' fill-opacity='.2'/%3E%3C/svg%3E");
+  background-position: -0.5px calc(var(--sy, 0px) - 0.5px);
+  -webkit-mask-image: radial-gradient(circle 280px at var(--mx, -999px) var(--my, -999px), #000, transparent);
+  mask-image: radial-gradient(circle 280px at var(--mx, -999px) var(--my, -999px), #000, transparent);
+}
+
+/* Regla: una marca cada 10 px y una más alta cada 100 */
+.ruler {
+  background-image:
+    linear-gradient(to right, #73777b 1px, transparent 1px),
+    linear-gradient(to right, #3d4044 1px, transparent 1px);
+  background-size: 100px 12px, 10px 5px;
+  background-position: left bottom;
+  background-repeat: repeat-x;
+}
+
+/* Cota vertical de una sección: línea, topes y la altura medida */
+.dim {
+  width: 9px;
+  border-block: 1px solid #3d4044;
+}
+.dim::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 4px;
+  width: 1px;
+  background: #2b2d30;
+}
+.dim-label {
+  position: sticky;
+  top: 50vh;
+  display: block;
+  width: 15px;
+  margin: 2.5rem 0 2.5rem -3px;
+  padding-block: 6px;
+  background: #111214;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 15px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #83878b;
+}
+
+/* ------------------------------------------------- Glitch al cambiar idioma */
+/* Todo lo maneja components/language.tsx: pone la clase, rompe el texto en
+   simbolos y sortea en cada paso las variables --g* de aca abajo. */
+.glitching body {
+  /* aberracion cromatica */
+  text-shadow:
+    var(--ga, 2px) 0 rgba(255, 0, 170, 0.8),
+    calc(var(--ga, 2px) * -1) 0 rgba(0, 229, 255, 0.8);
+}
+.glitching main,
+.glitching footer {
+  transform: translateX(var(--gx, 0)) skewX(var(--gs, 0)); /* sacudida */
+}
+.glitching body::after {
+  /* lineas de barrido */
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(240, 240, 237, 0.06) 0 1px, transparent 1px 3px);
+}
+.glitching body::before {
+  /* una franja de la pantalla, invertida */
+  content: "";
+  position: fixed;
+  inset-inline: 0;
+  top: var(--gy, 0);
+  height: var(--gh, 0);
+  z-index: 100;
+  pointer-events: none;
+  background: #f0f0ed;
+  mix-blend-mode: difference;
+  opacity: var(--go, 0);
+}
+
+/* Quiebre de letras: el texto del elemento se oculta y se dibuja dos veces,
+   una franja de arriba y otra de abajo, corridas hacia lados distintos. */
+[data-g] {
+  position: relative;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+[data-g]::before,
+[data-g]::after {
+  content: attr(data-gt);
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  pointer-events: none;
+  -webkit-text-fill-color: currentColor;
+}
+[data-g]::before {
+  clip-path: inset(-10% -40px 52% -40px);
+  transform: translateX(-7px);
+  text-shadow: 3px 0 rgba(255, 0, 170, 0.8);
+}
+[data-g]::after {
+  clip-path: inset(48% -40px -10% -40px);
+  transform: translateX(6px);
+  text-shadow: -3px 0 rgba(0, 229, 255, 0.8);
+}
+[data-g="2"]::before { clip-path: inset(-10% -40px 68% -40px); transform: translateX(13px); }
+[data-g="2"]::after  { clip-path: inset(32% -40px -10% -40px); transform: translateX(-4px); }
+[data-g="3"]::before { clip-path: inset(-10% -40px 38% -40px); transform: translate(4px, -3px) skewX(-14deg); }
+[data-g="3"]::after  { clip-path: inset(62% -40px -10% -40px); transform: translate(-11px, 2px); }
+[data-g="4"]::before { clip-path: inset(-10% -40px 60% -40px); transform: translateX(-16px) scaleY(1.15); }
+[data-g="4"]::after  { clip-path: inset(40% -40px -10% -40px); transform: translateX(9px) skewX(10deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* ------------------------------------------------------------------ Idiomas */
+/* Los dos idiomas van en el HTML y se muestra uno. Así las fórmulas se
+   dibujan una sola vez, al compilar, y el cambio no pide nada a la red.
+   El atributo lo pone un script en <head> antes de la primera pintura. */
+:root:not([data-lang="es"]) .l-es,
+:root[data-lang="es"] .l-en {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------- El texto */
+.prose-spec {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: #c9cacb;
+}
+.prose-spec > * + * {
+  margin-top: 1.1em;
+}
+.prose-spec b,
+.prose-spec strong {
+  color: #f0f0ed;
+  font-weight: 600;
+}
+.prose-spec a {
+  color: #f0f0ed;
+  border-bottom: 1px solid #3d4044;
+  transition: border-color 0.15s, color 0.15s;
+}
+.prose-spec a:hover {
+  color: var(--tone);
+  border-color: var(--tone);
+}
+.prose-spec ul {
+  display: grid;
+  gap: 0.45em;
+}
+.prose-spec ul > li {
+  position: relative;
+  padding-left: 1.4em;
+}
+.prose-spec ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2em;
+  top: 0.78em;
+  width: 0.5em;
+  height: 1px;
+  background: var(--tone);
+}
+.prose-spec ol {
+  counter-reset: step;
+  display: grid;
+  gap: 0.45em;
+}
+.prose-spec ol > li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 2em;
+}
+.prose-spec ol > li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.32em;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72em;
+  color: var(--tone);
+}
+
+/* Código y etiquetas de chunk */
+code,
+.code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.86em;
+  color: #f0f0ed;
+}
+:not(pre) > code {
+  padding: 0.08em 0.36em;
+  border: 1px solid #2b2d30;
+  background: #181a1d;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* Tablas de la spec */
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.spec-table th {
+  text-align: left;
+  font-family: var(--font-mono), monospace;
+  font-weight: 400;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #83878b;
+  padding: 0 1rem 0.6rem 0;
+  border-bottom: 1px solid #3d4044;
+}
+.spec-table td {
+  padding: 0.7rem 1rem 0.7rem 0;
+  border-bottom: 1px solid #2b2d30;
+  vertical-align: top;
+}
+.spec-table td:first-child {
+  color: #f0f0ed;
+  white-space: nowrap;
+}
+.spec-table .num {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Fórmulas: KaTeX con el color del texto, y las de bloque en su panel */
+.katex {
+  font-size: 1.08em;
+  color: #f0f0ed;
+}
+.tex-block {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #2b2d30;
+  border-left: 2px solid var(--tone);
+  background: rgba(24, 26, 29, 0.7);
+}
+.tex-block .katex-display {
+  margin: 0;
+  text-align: left;
+}
+.tex-block .katex-display > .katex {
+  text-align: left;
+}
+.tex-tag {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #83878b;
+}
+
+/* Paneles con marcas de corte en las esquinas, como los del portfolio */
+.frame {
+  position: relative;
+  border: 1px solid #2b2d30;
+  background: rgba(24, 26, 29, 0.55);
+}
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+}
+.frame::before {
+  left: -5px;
+  top: -5px;
+  border-left: 1px solid #83878b;
+  border-top: 1px solid #83878b;
+}
+.frame::after {
+  right: -5px;
+  bottom: -5px;
+  border-right: 1px solid #83878b;
+  border-bottom: 1px solid #83878b;
+}
+
+/* Barras de tamaño: crecen al entrar en pantalla */
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.bar {
+  transform-origin: left;
+  animation: bar-grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-timeline: view();
+  animation-range: entry 10% cover 35%;
+}
+
+/* Índice lateral */
+.toc a {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.3rem 0;
+  color: #a3a4a6;
+  transition: color 0.15s;
+}
+.toc a:hover,
+.toc a[aria-current="true"] {
+  color: #f0f0ed;
+}
+.toc a[aria-current="true"] .toc-n {
+  color: var(--tone);
+}
+
+/* Campos de las calculadoras */
+.field {
+  width: 100%;
+  border: 1px solid #3d4044;
+  background: #111214;
+  padding: 0.55rem 0.7rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.9rem;
+  color: #f0f0ed;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--tone);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar { animation: none; }
+}
+
+/* Botón de idioma: marca el idioma vigente sin esperar a React */
+.tg-en, .tg-es { color: #83878b; }
+:root:not([data-lang="es"]) .tg-en,
+:root[data-lang="es"] .tg-es { color: #f0f0ed; }
