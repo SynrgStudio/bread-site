@@ -18,16 +18,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # La página ahora se arma en synrgs-web, desde el corpus del formato.
+      # Mientras bread.synrgs.tech siga en GitHub Pages, acá se publica ese build tal cual.
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: dist
 
   deploy:
     needs: build
