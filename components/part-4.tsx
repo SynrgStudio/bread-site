@@ -3,6 +3,7 @@ import Section from "@/components/section"
 import { Stat } from "@/components/figures"
 import { TexBlock } from "@/components/tex"
 import Logo from "@/components/logo"
+import { DraftNotice } from "@/components/hero"
 
 // § 10 a § 12: los datos de slicer, la conformidad y el estado del formato.
 
@@ -127,10 +128,33 @@ export function Status() {
     <Section
       id="status"
       lead={{
-        en: "A draft, and close. The complete specification and its repository open to the public once it is frozen.",
-        es: "Un borrador, y cerca. La especificación completa y su repositorio se abren al público cuando se congele.",
+        en: "A draft, and close. This page explains it; the full text comes out with version 1.",
+        es: "Un borrador, y cerca. Esta página lo explica; el texto completo sale con la versión 1.",
       }}
     >
+      <div>
+        <DraftNotice />
+        <p className="label mb-4 mt-8">
+          <L en="Before version 1 is frozen" es="Antes de congelar la versión 1" />
+        </p>
+        <B
+          className="max-w-[44rem]"
+          en={
+            <ul>
+              <li>Settle units and axes, so every program agrees on what a millimetre and “up” are.</li>
+              <li>A second reader, written from the specification alone, that reads every conformance file the same way.</li>
+              <li>Breadslicer moving to the reference implementation for its own files.</li>
+            </ul>
+          }
+          es={
+            <ul>
+              <li>Definir unidades y ejes, para que todos los programas coincidan en qué es un milímetro y dónde es “arriba”.</li>
+              <li>Un segundo lector, escrito solo a partir de la especificación, que lea igual cada archivo de conformidad.</li>
+              <li>Que Breadslicer pase a usar la implementación de referencia para sus propios archivos.</li>
+            </ul>
+          }
+        />
+      </div>
       <div className="overflow-x-auto">
         <table className="spec-table">
           <tbody>

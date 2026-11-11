@@ -449,16 +449,6 @@ export function Limits() {
                 f: String.raw`n \le 3t`,
                 y: { en: "a small payload cannot ask for a large mesh", es: "un payload chico no puede pedir una malla grande" },
               },
-              {
-                w: { en: "support and hollow entries", es: "entradas de soportes y ahuecado" },
-                f: String.raw`k = 20`,
-                y: { en: "model, part, generator, version, document", es: "modelo, parte, generador, versión, documento" },
-              },
-              {
-                w: { en: "paint entries · runs", es: "entradas de pintura · tramos" },
-                f: String.raw`k = 13 \;\cdot\; k = 5`,
-                y: { en: "leaf, kind, version, document · length, value", es: "hoja, tipo, versión, documento · largo, valor" },
-              },
             ].map((r) => (
               <tr key={r.f}>
                 <td className="!whitespace-normal">

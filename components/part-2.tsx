@@ -30,12 +30,11 @@ function SceneTree() {
   )
 }
 
-const RECORDS = [
-  { k: "0", en: "group: node fields, then its children", es: "grupo: campos de nodo y después sus hijos" },
-  { k: "1", en: "leaf: node fields, then a mesh index", es: "hoja: campos de nodo y después un índice de malla" },
-  { k: "2", en: "leaf with a shared mesh: through the list of mesh resources, so editing it changes every leaf that shows it", es: "hoja con malla compartida: a través de la lista de recursos, así editarla cambia todas las hojas que la muestran" },
-  { k: "4", en: "reference: node fields, then a subtree index; one more copy of that subtree", es: "referencia: campos de nodo y después un índice de subárbol; una copia más de ese subárbol" },
-  { k: "5", en: "subtree: a node index, the root of the next subtree", es: "subárbol: un índice de nodo, la raíz del subárbol siguiente" },
+const NODES = [
+  { k: "group", en: "holds other nodes, in order", es: "agrupa otros nodos, en orden" },
+  { k: "leaf", en: "shows one mesh", es: "muestra una malla" },
+  { k: "shared leaf", en: "shows a mesh kept as shared on purpose: editing it changes every leaf that shows it", es: "muestra una malla compartida a propósito: editarla cambia todas las hojas que la muestran" },
+  { k: "reference", en: "places one more copy of a whole subtree", es: "pone una copia más de un subárbol entero" },
 ]
 
 export function Scene() {
@@ -50,35 +49,22 @@ export function Scene() {
       <SceneTree />
 
       <div>
-        <p className="label mb-4">
-          <L en="Records · each starts with a u8 kind" es="Registros · cada uno empieza con un u8 de tipo" />
-        </p>
-        <table className="spec-table">
-          <thead>
-            <tr>
-              <th>
-                <L en="Kind" es="Tipo" />
-              </th>
-              <th>
-                <L en="Record" es="Registro" />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {RECORDS.map((r) => (
-              <tr key={r.k}>
-                <td className="font-mono">{r.k}</td>
-                <td>
-                  <L en={r.en} es={r.es} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="grid gap-px border border-line bg-line sm:grid-cols-2">
+          {NODES.map((n) => (
+            <div key={n.k} className="bg-bg p-5">
+              <p className="font-mono text-[13px]" style={{ color: "var(--tone)" }}>
+                {n.k}
+              </p>
+              <p className="mt-2 text-[15px] leading-relaxed">
+                <L en={n.en} es={n.es} />
+              </p>
+            </div>
+          ))}
+        </div>
         <p className="mt-4 text-sm text-muted">
           <L
-            en="Any other kind, 3 included, makes the payload malformed. The result of an operation on several meshes, such as a boolean difference, is stored as a leaf that shows the resulting mesh."
-            es="Cualquier otro tipo, el 3 incluido, hace que el payload esté mal formado. El resultado de una operación entre mallas, como una diferencia booleana, se guarda como una hoja que muestra la malla resultante."
+            en="The result of an operation on several meshes, such as a boolean difference, is stored as a leaf that shows the resulting mesh."
+            es="El resultado de una operación entre mallas, como una diferencia booleana, se guarda como una hoja que muestra la malla resultante."
           />
         </p>
       </div>
@@ -87,14 +73,14 @@ export function Scene() {
         className="max-w-[44rem]"
         en={
           <p>
-            <b>Transforms.</b> A node with a transform stores twelve <code>f64</code>: a 3 × 3 matrix <Tex>M</Tex>, row by row,
-            and a translation <Tex>t</Tex>. It takes a point from the node's own space to its parent's:
+            <b>Transforms.</b> A node's transform is a 3 × 3 matrix <Tex>M</Tex> and a translation <Tex>t</Tex>, in{" "}
+            <code>f64</code>. It takes a point from the node's own space to its parent's:
           </p>
         }
         es={
           <p>
-            <b>Transformaciones.</b> Un nodo con transformación guarda doce <code>f64</code>: una matriz <Tex>M</Tex> de 3 × 3,
-            fila por fila, y una traslación <Tex>t</Tex>. Lleva un punto del espacio del nodo al de su padre:
+            <b>Transformaciones.</b> La transformación de un nodo es una matriz <Tex>M</Tex> de 3 × 3 y una traslación{" "}
+            <Tex>t</Tex>, en <code>f64</code>. Lleva un punto del espacio del nodo al de su padre:
           </p>
         }
       />
@@ -131,7 +117,7 @@ export function Scene() {
               <code>f64</code> and rounded to <code>f32</code> only at the end, if at all.
             </p>
             <p>
-              <b>No cycles, without checking for them.</b> Records are listed children first: every record names only nodes,
+              <b>No cycles, without checking for them.</b> Nodes are listed children first: every node names only nodes,
               meshes and subtrees listed before it. So no node can contain itself and no subtree can reach itself through
               references, and a reader proves it just by reading in order. It still checks that each node has at most one
               place: one group's child, a root, or a subtree's root.
@@ -145,7 +131,7 @@ export function Scene() {
               calculan en <code>f64</code> y se redondean a <code>f32</code> recién al final, si hace falta.
             </p>
             <p>
-              <b>Sin ciclos, sin buscarlos.</b> Los registros van con los hijos primero: cada registro nombra solo nodos, mallas
+              <b>Sin ciclos, sin buscarlos.</b> Los nodos van con los hijos primero: cada nodo nombra solo nodos, mallas
               y subárboles listados antes. Así ningún nodo puede contenerse a sí mismo y ningún subárbol puede llegar a sí mismo
               por referencias, y un lector lo demuestra con solo leer en orden. Igual verifica que cada nodo tenga a lo sumo un
               lugar: hijo de un grupo, raíz, o raíz de un subárbol.
@@ -156,15 +142,6 @@ export function Scene() {
     </Section>
   )
 }
-
-const V2_LAYOUT = [
-  { f: "metadata", t: "", en: "the mesh's name and comment, as in version 1", es: "el nombre y el comentario de la malla, como en la versión 1" },
-  { f: "vertex count", t: "u32", en: "how many vertices", es: "cuántos vértices" },
-  { f: "triangle count", t: "u32", en: "how many triangles", es: "cuántos triángulos" },
-  { f: "connectivity", t: "u8", en: "0 A, triangles in their own order · 1 B, reordered", es: "0 A, triángulos en su orden · 1 B, reordenados" },
-  { f: "vertex coding", t: "u8", en: "0 meshopt · 1 prediction + rANS · 2 prediction + byte planes", es: "0 meshopt · 1 predicción + rANS · 2 predicción + planos de bytes" },
-  { f: "parts", t: "bytes", en: "index buffer, permutation (B only), corners, then the vertex parts", es: "buffer de índices, permutación (solo B), esquinas y las partes de vértices" },
-]
 
 export function Mesh() {
   return (
@@ -181,14 +158,14 @@ export function Mesh() {
           <>
             <p>
               <b>Version 1</b> stands on two published bitstreams, the ones meshoptimizer wrote for glTF. Vertices, three{" "}
-              <code>f32</code> each, go through the <i>attribute codec</i> (<code>KHR_meshopt_compression</code>, mode 0, byte
-              stride 12, no filter, first byte <code>0xA1</code>). It works on bytes and keeps every one, so it keeps every bit of
-              every coordinate. Triangles go through the <i>triangle codec</i> (mode 1, first byte <code>0xE1</code>).
+              <code>f32</code> each, go through the <i>attribute codec</i> of <code>KHR_meshopt_compression</code>. It works on
+              bytes and keeps every one, so it keeps every bit of every coordinate. Triangles go through its <i>triangle
+              codec</i>.
             </p>
             <p>
               The triangle codec may hand a triangle back starting at another corner: <Tex>(a,b,c)</Tex> can come back as{" "}
-              <Tex>(b,c,a)</Tex> or <Tex>(c,a,b)</Tex>, with the same winding. A list of rotations turns those back, each one a{" "}
-              <code>u32</code> gap from the previous one and a <code>u8</code> corner:
+              <Tex>(b,c,a)</Tex> or <Tex>(c,a,b)</Tex>, with the same winding. A list of rotations names those triangles and the corner
+              each one starts at, and turns them back:
             </p>
           </>
         }
@@ -196,52 +173,42 @@ export function Mesh() {
           <>
             <p>
               <b>La versión 1</b> se apoya en dos bitstreams publicados, los que meshoptimizer escribió para glTF. Los
-              vértices, tres <code>f32</code> cada uno, pasan por el <i>códec de atributos</i> (
-              <code>KHR_meshopt_compression</code>, modo 0, paso de 12 bytes, sin filtro, primer byte <code>0xA1</code>).
-              Trabaja sobre bytes y los guarda todos, así que guarda cada bit de cada coordenada. Los triángulos pasan por el{" "}
-              <i>códec de triángulos</i> (modo 1, primer byte <code>0xE1</code>).
+              vértices, tres <code>f32</code> cada uno, pasan por el <i>códec de atributos</i> de{" "}
+              <code>KHR_meshopt_compression</code>. Trabaja sobre bytes y los guarda todos, así que guarda cada bit de cada
+              coordenada. Los triángulos pasan por su <i>códec de triángulos</i>.
             </p>
             <p>
               El códec de triángulos puede devolver un triángulo empezando por otra esquina: <Tex>(a,b,c)</Tex> puede volver
-              como <Tex>(b,c,a)</Tex> o <Tex>(c,a,b)</Tex>, con el mismo sentido de giro. Una lista de rotaciones los da vuelta,
-              cada una con un <code>u32</code> de distancia a la anterior y un <code>u8</code> de esquina:
+              como <Tex>(b,c,a)</Tex> o <Tex>(c,a,b)</Tex>, con el mismo sentido de giro. Una lista de rotaciones nombra esos triángulos y
+              la esquina por la que empieza cada uno, y los da vuelta:
             </p>
           </>
         }
       />
       <TexBlock tag="6.5">{String.raw`(s_0,\,s_1,\,s_2)\ \xrightarrow{\ c\ }\ \big(s_{c},\ s_{(c+1) \bmod 3},\ s_{(c+2) \bmod 3}\big),\qquad c \in \{1, 2\}`}</TexBlock>
 
-      <div>
-        <p className="label mb-4">
-          <L en="Version 2 · the chunk writers should write" es="Versión 2 · la que deberían escribir todos" />
-        </p>
-        <div className="overflow-x-auto">
-          <table className="spec-table">
-            <thead>
-              <tr>
-                <th>
-                  <L en="Field" es="Campo" />
-                </th>
-                <th>
-                  <L en="Type" es="Tipo" />
-                </th>
-                <th>
-                  <L en="Meaning" es="Significado" />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {V2_LAYOUT.map((r) => (
-                <tr key={r.f}>
-                  <td className="font-mono text-[13px]">{r.f}</td>
-                  <td className="font-mono text-[13px] text-muted">{r.t}</td>
-                  <td>
-                    <L en={r.en} es={r.es} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="frame p-6">
+          <p className="label mb-3" style={{ color: "var(--tone)" }}>
+            <L en="Version 2 · triangles" es="Versión 2 · triángulos" />
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            <L
+              en="Connectivity A, in their own order, or B, in the codec's order with a permutation back."
+              es="Conectividad A, en su orden, o B, en el orden del códec con una permutación de vuelta."
+            />
+          </p>
+        </div>
+        <div className="frame p-6">
+          <p className="label mb-3" style={{ color: "var(--tone)" }}>
+            <L en="Version 2 · vertices" es="Versión 2 · vértices" />
+          </p>
+          <p className="text-[15px] leading-relaxed">
+            <L
+              en="The meshopt codec as in version 1, or a prediction plus its residuals, coded with rANS or as byte planes."
+              es="El códec de meshopt como en la versión 1, o una predicción más sus residuos, codificados con rANS o como planos de bytes."
+            />
+          </p>
         </div>
       </div>
       <B

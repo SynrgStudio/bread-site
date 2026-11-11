@@ -15,6 +15,22 @@ const MAGIC = [
   { hex: "00", ch: "" },
 ]
 
+// La spec todavía no está congelada: su texto completo sale con la versión 1.
+export function DraftNotice({ className = "" }: { className?: string }) {
+  return (
+    <p
+      className={`inline-flex items-center gap-2.5 border px-3 py-1.5 font-mono text-[11px] leading-snug ${className}`}
+      style={{ borderColor: "rgba(215,167,90,.45)", color: "var(--tone)", background: "rgba(215,167,90,.06)" }}
+    >
+      <span aria-hidden="true" className="h-1.5 w-1.5 flex-none rounded-full" style={{ background: "var(--tone)" }} />
+      <L
+        en="Specification draft — the full text will be published when version 1 is frozen."
+        es="Especificación en borrador: el texto completo se publica cuando se congele la versión 1."
+      />
+    </p>
+  )
+}
+
 export function MagicBytes() {
   return (
     <figure className="frame p-4 sm:p-6">
@@ -52,6 +68,7 @@ export default function Hero() {
             es="Formato de archivo 3D abierto · Especificación en borrador · Apache-2.0"
           />
         </p>
+        <DraftNotice className="mt-5" />
         <h1 className="display mt-8 max-w-[15ch] text-[2.6rem] sm:text-7xl lg:text-[5.5rem]">
           <L en="Every bit of the mesh. A twelfth of the size." es="Cada bit de la malla. Un doceavo del tamaño." />
         </h1>

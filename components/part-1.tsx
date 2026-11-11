@@ -172,46 +172,41 @@ export function Holds() {
   )
 }
 
-// La cabecera de un chunk, a escala: cada byte ocupa lo mismo.
+// Un chunk a alto nivel: qué lleva la cabecera y el payload comprimido.
+// Sin offsets ni tamaños: el layout exacto sale con la spec congelada.
 const CHUNK = [
-  { bytes: 4, name: "tag", off: 0 },
-  { bytes: 2, name: "ver", off: 4 },
-  { bytes: 8, name: "raw length", off: 6 },
-  { bytes: 8, name: "stored length", off: 14 },
-  { bytes: 4, name: "CRC-32", off: 22 },
+  { name: "tag", en: "what it holds", es: "qué guarda" },
+  { name: "version", en: "of this chunk", es: "de este chunk" },
+  { name: "lengths", en: "raw and stored", es: "crudo y guardado" },
+  { name: "CRC-32", en: "of the stored bytes", es: "de los bytes guardados" },
 ]
 
 function ChunkDiagram() {
   return (
     <Figure
       caption={{
-        en: "One chunk, drawn to scale: a 26-byte header, then the stored bytes · the next chunk starts right after them",
-        es: "Un chunk, a escala: una cabecera de 26 bytes y después los bytes guardados · el chunk siguiente empieza justo después",
+        en: "One chunk: a short header, then the payload compressed with zstd · the next chunk starts right after it",
+        es: "Un chunk: una cabecera corta y después el payload comprimido con zstd · el chunk siguiente empieza justo después",
       }}
     >
-      <div className="flex font-mono text-[10px] sm:text-[11px]">
+      <div className="grid grid-cols-2 gap-px font-mono text-[11px] sm:grid-cols-[repeat(4,minmax(0,1fr))_minmax(0,1.6fr)]">
         {CHUNK.map((c) => (
-          <div key={c.off} style={{ flex: c.bytes }} className="min-w-0">
-            <div className="mb-1.5 text-faint">{c.off}</div>
-            <div
-              className="flex h-12 items-center justify-center overflow-hidden border-y border-l border-line-strong bg-panel-2 px-1 text-center leading-tight text-ink"
-              style={{ backgroundImage: `repeating-linear-gradient(to right, transparent 0 calc(100% / ${c.bytes} - 1px), rgba(240,240,237,.08) calc(100% / ${c.bytes} - 1px) calc(100% / ${c.bytes}))` }}
-            >
-              <span className="hidden sm:inline">{c.name}</span>
+          <div key={c.name} className="border border-line-strong bg-panel-2 px-3 py-3">
+            <div className="text-[13px] text-ink">{c.name}</div>
+            <div className="mt-1 text-faint">
+              <L en={c.en} es={c.es} />
             </div>
-            <div className="mt-1.5 hidden text-faint sm:block">{c.bytes} B</div>
           </div>
         ))}
-        <div style={{ flex: 14 }} className="min-w-0">
-          <div className="mb-1.5 text-faint">26</div>
-          <div
-            className="flex h-12 items-center justify-center border border-dashed px-2 text-center leading-tight"
-            style={{ borderColor: "var(--tone)", color: "var(--tone)", background: "repeating-linear-gradient(135deg, rgba(215,167,90,.08) 0 6px, transparent 6px 12px)" }}
-          >
-            zstd …
+        <div
+          className="col-span-2 border border-dashed px-3 py-3 sm:col-span-1"
+          style={{ borderColor: "var(--tone)", background: "repeating-linear-gradient(135deg, rgba(215,167,90,.08) 0 6px, transparent 6px 12px)" }}
+        >
+          <div className="text-[13px]" style={{ color: "var(--tone)" }}>
+            payload · zstd
           </div>
-          <div className="mt-1.5 text-faint">
-            <L en="stored length" es="stored length" />
+          <div className="mt-1 text-faint">
+            <L en="the data itself, compressed" es="los datos, comprimidos" />
           </div>
         </div>
       </div>
