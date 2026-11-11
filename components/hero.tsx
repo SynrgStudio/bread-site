@@ -1,7 +1,7 @@
 import { L } from "@/components/lang"
 import { Ruler } from "@/components/technical"
 
-// Los diez bytes con los que empieza todo archivo .bread (SPEC 4.1).
+// Los ocho bytes fijos del magic y la versión del contenedor (u16), que podría subir.
 const MAGIC = [
   { hex: "42", ch: "B" },
   { hex: "52", ch: "R" },
@@ -50,8 +50,8 @@ export function MagicBytes() {
       </div>
       <figcaption className="mt-4 font-mono text-[11px] leading-relaxed text-faint">
         <L
-          en={<>Every .bread file starts with these ten bytes · u16 little-endian · offsets 0–9</>}
-          es={<>Todo archivo .bread empieza con estos diez bytes · u16 little-endian · offsets 0–9</>}
+          en={<>Every .bread file starts with these eight bytes, then the container version as a u16, little-endian · offsets 0–9</>}
+          es={<>Todo archivo .bread empieza con estos ocho bytes y después la versión del contenedor, u16 little-endian · offsets 0–9</>}
         />
       </figcaption>
     </figure>

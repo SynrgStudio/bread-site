@@ -141,14 +141,20 @@ export function Status() {
           className="max-w-[44rem]"
           en={
             <ul>
-              <li>Settle units and axes, so every program agrees on what a millimetre and “up” are.</li>
+              <li>
+                <s className="text-faint">Settle units and axes, so every program agrees on what a millimetre and “up” are.</s>{" "}
+                <span className="font-mono text-xs" style={{ color: "var(--tone)" }}>done</span>
+              </li>
               <li>A second reader, written from the specification alone, that reads every conformance file the same way.</li>
               <li>Breadslicer moving to the reference implementation for its own files.</li>
             </ul>
           }
           es={
             <ul>
-              <li>Definir unidades y ejes, para que todos los programas coincidan en qué es un milímetro y dónde es “arriba”.</li>
+              <li>
+                <s className="text-faint">Definir unidades y ejes, para que todos los programas coincidan en qué es un milímetro y dónde es “arriba”.</s>{" "}
+                <span className="font-mono text-xs" style={{ color: "var(--tone)" }}>hecho</span>
+              </li>
               <li>Un segundo lector, escrito solo a partir de la especificación, que lea igual cada archivo de conformidad.</li>
               <li>Que Breadslicer pase a usar la implementación de referencia para sus propios archivos.</li>
             </ul>
@@ -161,6 +167,7 @@ export function Status() {
             {[
               { k: { en: "Extension", es: "Extensión" }, v: <code>.bread</code> },
               { k: { en: "Magic", es: "Magic" }, v: <code>42 52 45 41 44 00 0D 0A</code> },
+              { k: { en: "Units", es: "Unidades" }, v: <L en="mm, Z up" es="mm, Z arriba" /> },
               { k: { en: "Container", es: "Contenedor" }, v: <L en="version 1" es="versión 1" /> },
               { k: { en: "Chunks", es: "Chunks" }, v: <span className="font-mono text-[13px]">SCNE 1 · MESH 2 · THMB 1 · PROJ 1 · SUPP 2 · HOLW 2 · SPRV 1 · SURF 1</span> },
               { k: { en: "Specification", es: "Especificación" }, v: <L en="draft, not frozen yet" es="borrador, todavía sin congelar" /> },

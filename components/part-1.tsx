@@ -66,9 +66,9 @@ export function Numbers() {
         </p>
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
           <Stat value="~50" unit="ms" en="to open the 1.9 M figure, native, version 1" es="para abrir la figura de 1,9 M, nativo, versión 1" />
-          <Stat value="205" unit="ms" en="to open it cold in WebAssembly, version 2" es="para abrirla en frío en WebAssembly, versión 2" />
+          <Stat value="~200" unit="ms" en="to open it in WebAssembly, version 2 (about 350 ms the first time)" es="para abrirla en WebAssembly, versión 2 (unos 350 ms la primera vez)" />
           <Stat value="~0.5" unit="s" en="to save 2 million triangles" es="para guardar 2 millones de triángulos" />
-          <Stat value="62" unit="KB" tone en="the web reader, brotli; 119 KB with the writer" es="el lector web, con brotli; 119 KB con el escritor" />
+          <Stat value="71" unit="KB" tone en="the web reader, brotli" es="el lector web, con brotli" />
         </div>
         <p className="mt-6 text-sm text-muted">
           <L
@@ -88,12 +88,14 @@ export function Holds() {
       "Every triangle, in the same order, starting at the same corner: winding and first corner both survive.",
       "A scene: named parts, groups, meshes shared between parts, copies of whole subtrees, and a transform on every node.",
       "Room for a slicer: editable supports, hollowed models, paint on faces, a thumbnail and a preview of the supports.",
+      "Units and axes: millimetres, right-handed, Z up, with XY as the build plate. Triangles wind counter-clockwise seen from outside, as in STL. There is no unit field: a millimetre is a millimetre.",
     ],
     es: [
       "Cada coordenada de cada vértice, bit a bit: el cero negativo, los subnormales y los NaN con su contenido incluidos.",
       "Cada triángulo, en el mismo orden y empezando por la misma esquina: sobreviven el sentido de giro y la primera esquina.",
       "Una escena: partes con nombre, grupos, mallas compartidas entre partes, copias de subárboles enteros y una transformación en cada nodo.",
       "Lugar para un slicer: soportes editables, modelos ahuecados, pintura en las caras, una miniatura y una vista previa de los soportes.",
+      "Unidades y ejes: milímetros, ejes de mano derecha, Z hacia arriba y el plano XY como plato de impresión. Los triángulos giran en sentido antihorario vistos desde afuera, como en STL. No hay campo de unidades: un milímetro es un milímetro.",
     ],
   }
   const leaves = {
